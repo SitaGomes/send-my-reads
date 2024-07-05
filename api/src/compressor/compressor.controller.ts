@@ -11,7 +11,8 @@ import { diskStorage } from 'multer';
 import { extname } from 'path';
 import EmailService from 'src/email/email.service';
 import { CompressEpubDTO } from './dtos/compress-epub.dto';
-// import { CompressEpubDTO } from './dtos/compress-epub.dto';
+import { throwErrorFactory } from 'src/lib/errorFactory';
+import { ERROR_STATUS } from 'src/constants/STATUS';
 
 @Controller('compressor')
 export class CompressorController {
@@ -39,6 +40,13 @@ export class CompressorController {
     @UploadedFile() file: Express.Multer.File,
     @Body() body: CompressEpubDTO,
   ) {
+    if (!file || !body) {
+      throwErrorFactory(
+        'File and email are required',
+        ERROR_STATUS.BAD_REQUEST,
+      );
+    }
+
     try {
       const { email } = body;
       const filePath = file.path;
@@ -56,7 +64,10 @@ export class CompressorController {
       return { message: 'File compressed and sent' };
     } catch (err) {
       console.error('Error compressing file:', err);
-      return { message: 'Error compressing file' };
+      throwErrorFactory(
+        'Error compressing file',
+        ERROR_STATUS.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }
