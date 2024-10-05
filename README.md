@@ -1,5 +1,5 @@
 <p align="center">
-  ESR - Epub Size Reducer
+  Send My Reads
 </p>
 
 ### Ever tried to send an epub to your kindle and got hit with the 30mb email attachement limit?
