@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
+import { ERROR_STATUS } from 'src/lib/constants/STATUS';
+import { throwErrorFactory } from 'src/lib/error/errorFactory';
 
 @Injectable()
 class EmailService {
@@ -22,15 +24,10 @@ class EmailService {
     to: string,
     subject: string,
     text: string,
-    attachmentPath: string,
+    attachmentName: string,
+    attachment: Buffer,
   ) {
     try {
-      console.log(
-        process.env.EMAIL_SERVICE,
-        process.env.EMAIL_USER,
-        process.env.EMAIL_PASSWORD,
-      );
-
       const mailOptions = {
         from: process.env.EMAIL_USER,
         to,
@@ -38,8 +35,8 @@ class EmailService {
         text,
         attachments: [
           {
-            filename: 'attachment.epub',
-            path: attachmentPath,
+            filename: attachmentName,
+            content: attachment,
           },
         ],
       };
@@ -47,6 +44,10 @@ class EmailService {
       await this.transporter.sendMail(mailOptions);
     } catch (error) {
       console.error('Error sending email:', error);
+      throwErrorFactory(
+        'Error sending email',
+        ERROR_STATUS.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }
