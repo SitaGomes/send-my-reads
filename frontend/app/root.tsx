@@ -5,10 +5,8 @@ import {
   Scripts,
   ScrollRestoration,
 } from '@remix-run/react';
-import { json, LoaderFunction, LinksFunction } from '@remix-run/node';
-import { authenticator } from './.server/auth';
+import { LinksFunction } from '@remix-run/node';
 
-import './tailwind.css';
 import {
   HydrationBoundary,
   QueryClient,
@@ -16,6 +14,8 @@ import {
 } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useDehydratedState } from 'use-dehydrated-state';
+
+import './output.css';
 
 export const links: LinksFunction = () => [
   { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
@@ -32,7 +32,7 @@ export const links: LinksFunction = () => [
 
 function Layout({
   children,
-  title = 'App Title',
+  title = 'Send My Reads',
 }: {
   children: React.ReactNode;
   title: string;
@@ -46,7 +46,7 @@ function Layout({
         <title>{title}</title>
         <Links />
       </head>
-      <body className="flex min-h-screen flex-col items-center justify-center bg-gray-100 p-5 text-center font-sans text-gray-800 dark:bg-gray-900 dark:text-gray-100">
+      <body className="flex min-h-screen flex-col bg-accentColor text-center font-sans text-secondaryColor dark:bg-secondaryColor dark:text-accentColorForeground">
         {children}
         <ScrollRestoration />
         <Scripts />
@@ -54,11 +54,6 @@ function Layout({
     </html>
   );
 }
-
-export const loader: LoaderFunction = async ({ request }) => {
-  const user = await authenticator.isAuthenticated(request);
-  return json({ user });
-};
 
 export default function App() {
   const [queryClient] = useState(
@@ -77,7 +72,7 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <HydrationBoundary state={dehydratedState}>
-        <Layout title="create-kuma-project">
+        <Layout title="Send My Reads">
           <Outlet />
         </Layout>
       </HydrationBoundary>

@@ -7,7 +7,7 @@
     "build:css": "tailwindcss -m -i ./app/tailwind.css -o ./app/output.css",
     "build": "pnpm run build:css && remix vite:build",
     "dev": "pnpm run dev:frontend",
-    "dev:frontend": "concurrently \"remix vite:dev\" \"pnpm:dev:css\"",
+    "dev:frontend": "concurrently \"pnpm:dev:css\" \"remix vite:dev\"",
     "dev:css": "tailwindcss -w -i ./app/tailwind.css -o ./app/output.css",
     "lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
     "start": "remix-serve ./build/server/index.js",
@@ -19,11 +19,13 @@
     "@remix-run/serve": "^2.12.1",
     "@tanstack/react-query": "^5.56.2",
     "axios": "^1.7.7",
+    "clsx": "^2.1.1",
     "isbot": "^4.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "remix-auth": "^3.7.0",
     "remix-auth-form": "^1.5.0",
+    "tailwind-merge": "^2.5.4",
     "use-dehydrated-state": "^0.1.0"
   },
   "devDependencies": {
