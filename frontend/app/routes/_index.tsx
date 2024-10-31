@@ -31,6 +31,7 @@ export default function Index() {
               How it works
             </Link>
           </nav>
+
           <nav className="flex items-center gap-4">
             <Link
               className="hover:underline hover:text-accentColor"
@@ -39,7 +40,7 @@ export default function Index() {
               Login
             </Link>
             <Link
-              className="hover:underline hover:text-accentColor"
+              className="hover:underline text-secondaryColor bg-slate-100 hover: rounded-md p-2"
               to={ROUTES.REGISTER}
             >
               Get Started

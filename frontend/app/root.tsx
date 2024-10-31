@@ -15,7 +15,7 @@ import {
 import { useState } from 'react';
 import { useDehydratedState } from 'use-dehydrated-state';
 
-import './output.css';
+import './tailwind.css';
 
 export const links: LinksFunction = () => [
   { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
@@ -46,7 +46,7 @@ function Layout({
         <title>{title}</title>
         <Links />
       </head>
-      <body className="flex min-h-screen flex-col bg-accentColor text-center font-sans text-secondaryColor dark:bg-secondaryColor dark:text-accentColorForeground">
+      <body className="flex min-h-screen flex-col bg-white text-center font-sans text-secondaryColor dark:bg-secondaryColor dark:text-accentColorForeground">
         {children}
         <ScrollRestoration />
         <Scripts />

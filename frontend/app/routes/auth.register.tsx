@@ -1,51 +1,51 @@
-import { ActionFunctionArgs, json } from '@remix-run/node';
-import { Form, useActionData } from '@remix-run/react';
+import { ActionFunctionArgs, json, MetaFunction } from '@remix-run/node';
+import { Form, Link, useActionData } from '@remix-run/react';
 import { AuthApi } from '../.server/endpoints';
 import { ROUTES } from '../constants';
 import { authenticator } from '../.server';
+import { IoMdEye, IoMdEyeOff } from 'react-icons/io';
+import { useState } from 'react';
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: 'Create account | Send My Reads' },
+    {
+      name: 'description',
+      content:
+        'Create an account on Send My Reads to organize your books, send them to Kindle, and read anywhere.',
+    },
+  ];
+};
 
 export default function RegisterPage() {
   const actionData = useActionData<typeof action>();
 
-  return (
-    <div className="flex h-screen items-center justify-center bg-gray-100 dark:bg-gray-900">
-      <div className="w-full max-w-md rounded-lg bg-white p-8 shadow-md dark:bg-gray-800">
-        <h2 className="mb-6 text-center text-2xl font-bold text-gray-800 dark:text-gray-100">
-          Register
-        </h2>
-        <Form method="post" className="space-y-6">
-          <div>
-            <label
-              htmlFor="name"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
-              Name
-            </label>
-            <input
-              type="name"
-              id="name"
-              name="name"
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-            />
-            {actionData?.errors.name && (
-              <p className="mt-2 text-sm text-red-600">
-                {actionData.errors.name}
-              </p>
-            )}
-          </div>
+  const [showPassword, setShowPassword] = useState(false);
 
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
+  const togglePassword = () => {
+    setShowPassword((prev) => !prev);
+  };
+
+  return (
+    <div className="flex flex-col h-screen items-center">
+      <Link to={ROUTES.LANDING_PAGE} className="flex items-center gap-2 mt-4">
+        <img src="/Icon-secondary.svg" alt="Send My Reads" />
+        <h1 className="font-bold text-xl lg:text-2xl">Send My Reads</h1>
+      </Link>
+
+      <div className="flex flex-col gap-8 h-full justify-center">
+        <h1 className="font-bold text-xl lg:text-2xl">Create an account</h1>
+
+        <Form method="post" className="space-y-6">
+          <div className="flex flex-col items-start w-full">
+            <label htmlFor="email" className="text-secondaryColor">
               Email
             </label>
             <input
               type="email"
               id="email"
               name="email"
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              className="p-2 bg-transparent border-2 border-gray-300 rounded-md w-full"
             />
             {actionData?.errors.email && (
               <p className="mt-2 text-sm text-red-600">
@@ -54,19 +54,25 @@ export default function RegisterPage() {
             )}
           </div>
 
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
+          <div className="flex flex-col items-start w-full">
+            <label htmlFor="password" className="text-secondaryColor">
               Password
             </label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-            />
+            <div className="flex gap-4 w-full">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                id="password"
+                name="password"
+                className="p-2 bg-transparent border-2 border-gray-300 rounded-md w-full"
+              />
+
+              <button
+                onClick={togglePassword}
+                className="rounded-md bg-accentColorForeground px-4 py-2 text-sm font-medium text-secondaryColor hover:bg-accentColorForeground focus:outline-none focus:ring-2 focus:ring-accbg-accentColorForeground focus:ring-offset-2"
+              >
+                {showPassword ? <IoMdEyeOff /> : <IoMdEye />}
+              </button>
+            </div>
             {actionData?.errors.password && (
               <p className="mt-2 text-sm text-red-600">
                 {actionData.errors.password}
@@ -74,19 +80,25 @@ export default function RegisterPage() {
             )}
           </div>
 
-          <div>
-            <label
-              htmlFor="confirmPassword"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
-              Confirm Password
+          <div className="flex flex-col items-start w-full">
+            <label htmlFor="confirmPassword" className="text-secondaryColor">
+              Confirm password
             </label>
-            <input
-              type="password"
-              id="confirmPassword"
-              name="confirmPassword"
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-            />
+            <div className="flex gap-4 w-full">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                id="confirmPassword"
+                name="confirmPassword"
+                className="p-2 bg-transparent border-2 border-gray-300 rounded-md w-full"
+              />
+
+              <button
+                onClick={togglePassword}
+                className="rounded-md bg-accentColorForeground px-4 py-2 text-sm font-medium text-secondaryColor hover:bg-accentColorForeground focus:outline-none focus:ring-2 focus:ring-accbg-accentColorForeground focus:ring-offset-2"
+              >
+                {showPassword ? <IoMdEyeOff /> : <IoMdEye />}
+              </button>
+            </div>
             {actionData?.errors.confirmPassword && (
               <p className="mt-2 text-sm text-red-600">
                 {actionData.errors.confirmPassword}
@@ -96,10 +108,19 @@ export default function RegisterPage() {
 
           <button
             type="submit"
-            className="w-full rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            className="w-full rounded-md bg-secondaryColor px-4 py-2 text-sm font-medium text-white hover:bg-secondaryColor focus:outline-none focus:ring-2 focus:ring-seconDabg-secondaryColor focus:ring-offset-2"
           >
-            Register
+            Create account
           </button>
+          <p>
+            Do you have an account?{' '}
+            <Link
+              className="hover:underline text-secondaryColor"
+              to={ROUTES.LOGIN}
+            >
+              Login here
+            </Link>
+          </p>
         </Form>
       </div>
     </div>
