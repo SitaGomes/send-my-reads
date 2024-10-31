@@ -94,6 +94,9 @@ export default function LoginPage() {
               Get Started today
             </Link>
           </p>
+          {actionData?.errors.control && (
+            <p className="text-red-600 min-w-7">{actionData.errors.control}</p>
+          )}
         </Form>
       </div>
     </div>
@@ -101,29 +104,36 @@ export default function LoginPage() {
 }
 
 export async function action({ request }: ActionFunctionArgs) {
-  const formData = await request.formData();
+  const formData = await request.clone().formData();
   const email = String(formData.get('email'));
   const password = String(formData.get('password'));
 
   const errors = {
     email: '',
     password: '',
+    control: '',
   };
 
-  if (!email.includes('@') || !email.includes('@yupmail')) {
+  if (!email.includes('@') || email.includes('@yupmail')) {
     errors.email = 'Invalid email address';
   }
 
-  if (password.length < 12) {
-    errors.password = 'Password should be at least 12 characters';
+  if (password.length < 6) {
+    errors.password = 'Password should be at least 6 characters';
   }
 
   if (errors.email || errors.password) {
     return json({ errors });
   }
 
-  return await authenticator.authenticate('user-pass', request, {
-    successRedirect: ROUTES.HOME,
-    failureRedirect: ROUTES.LOGIN,
-  });
+  try {
+    return await authenticator.authenticate('user-pass', request, {
+      successRedirect: '/app',
+      failureRedirect: '/auth',
+    });
+  } catch (error) {
+    const e = error as Error;
+    console.error(e);
+    return json({ errors: { ...errors, control: e.message } }, { status: 401 });
+  }
 }

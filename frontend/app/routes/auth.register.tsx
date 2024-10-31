@@ -121,6 +121,11 @@ export default function RegisterPage() {
               Login here
             </Link>
           </p>
+          {actionData?.errors.control && (
+            <p className="mt-2 text-sm text-red-600">
+              {actionData.errors.control}
+            </p>
+          )}
         </Form>
       </div>
     </div>
@@ -128,7 +133,7 @@ export default function RegisterPage() {
 }
 
 export async function action({ request }: ActionFunctionArgs) {
-  const formData = await request.formData();
+  const formData = await request.clone().formData();
   const name = String(formData.get('name'));
   const email = String(formData.get('email'));
   const password = String(formData.get('password'));
@@ -139,13 +144,14 @@ export async function action({ request }: ActionFunctionArgs) {
     email: '',
     password: '',
     confirmPassword: '',
+    control: '',
   };
 
-  if (!email.includes('@') || !email.includes('@yupmail')) {
+  if (!email.includes('@') || email.includes('@yupmail')) {
     errors.email = 'Invalid email address';
   }
 
-  if (password.length < 12) {
+  if (password.length < 6) {
     errors.password = 'Password should be at least 12 characters';
   }
 
@@ -166,10 +172,15 @@ export async function action({ request }: ActionFunctionArgs) {
     return json({ errors });
   }
 
-  await AuthApi.register(name, email, password);
+  try {
+    await AuthApi.register(name, email, password);
 
-  await authenticator.authenticate('user-pass', request, {
-    successRedirect: ROUTES.HOME,
-    failureRedirect: ROUTES.REGISTER,
-  });
+    return await authenticator.authenticate('user-pass', request, {
+      successRedirect: ROUTES.HOME,
+      failureRedirect: ROUTES.REGISTER,
+    });
+  } catch (error) {
+    const e = error as Error;
+    return json({ errors: { ...errors, control: e.message } }, { status: 400 });
+  }
 }

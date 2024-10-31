@@ -1,10 +1,14 @@
-import { AuthUser } from '@kuma/models';
+import { AuthUser } from '~/models';
 import { ENDPOINTS } from '../../constants/ENDPOINTS';
 import BaseApi from './base.api';
 
 class AuthApi extends BaseApi {
   static async register(name: string, email: string, password: string) {
-    return this.post<AuthUser>(ENDPOINTS.REGISTER, { name, email, password });
+    return this.post<AuthUser>(ENDPOINTS.REGISTER, {
+      username: name,
+      email,
+      password,
+    });
   }
 
   static async login(email: string, password: string) {

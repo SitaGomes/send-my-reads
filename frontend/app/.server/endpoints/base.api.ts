@@ -33,7 +33,18 @@ abstract class BaseApi {
     data?: unknown,
     config?: AxiosRequestConfig,
   ): Promise<T> {
-    return this.request<T>({ ...config, method: 'POST', url: endpoint, data });
+    try {
+      return this.request<T>({
+        ...config,
+        method: 'POST',
+        url: endpoint,
+        data,
+      });
+    } catch (error) {
+      const e = error as Error;
+      console.log('base-api', error);
+      throw new Error(e.message);
+    }
   }
 
   protected static async put<T>(

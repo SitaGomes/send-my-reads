@@ -7,7 +7,7 @@ authenticator.use(
     const email = (form.get('email') as string) || '';
     const password = (form.get('password') as string) || '';
 
-    const { user } = await AuthApi.login(email, password);
+    const user = await AuthApi.login(email, password);
 
     return user;
   }),
