@@ -4,12 +4,20 @@ import { AuthApi } from '../endpoints';
 
 authenticator.use(
   new FormStrategy(async ({ form }) => {
-    const email = (form.get('email') as string) || '';
-    const password = (form.get('password') as string) || '';
+    const email = form.get('email');
+    const password = form.get('password');
 
-    const user = await AuthApi.login(email, password);
+    if (!email || !password) {
+      throw new Error('Email and password are required');
+    }
 
-    return user;
+    try {
+      const user = await AuthApi.login(email as string, password as string);
+      return user;
+    } catch (error) {
+      console.error('Authentication Error:', error);
+      throw error;
+    }
   }),
   'user-pass',
 );

@@ -646,14 +646,6 @@ video {
   width: 100%;
 }
 
-.min-w-full {
-  min-width: 100%;
-}
-
-.min-w-9 {
-  min-width: 2.25rem;
-}
-
 .min-w-7 {
   min-width: 1.75rem;
 }
@@ -668,6 +660,10 @@ video {
 
 .max-w-md {
   max-width: 28rem;
+}
+
+.cursor-not-allowed {
+  cursor: not-allowed;
 }
 
 .grid-cols-3 {

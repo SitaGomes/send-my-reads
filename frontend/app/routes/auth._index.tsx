@@ -1,7 +1,13 @@
 import { ActionFunctionArgs, json, MetaFunction } from '@remix-run/node';
-import { Form, Link, useActionData } from '@remix-run/react';
+import {
+  Form,
+  Link,
+  redirect,
+  useActionData,
+  useNavigation,
+} from '@remix-run/react';
 import { ROUTES } from '../constants/ROUTES';
-import { authenticator } from '../.server';
+import { authenticator, commitSession, getSession } from '../.server';
 import { IoMdEye, IoMdEyeOff } from 'react-icons/io';
 import { useState } from 'react';
 
@@ -18,12 +24,15 @@ export const meta: MetaFunction = () => {
 
 export default function LoginPage() {
   const actionData = useActionData<typeof action>();
+  const navigation = useNavigation();
 
   const [showPassword, setShowPassword] = useState(false);
 
   const togglePassword = () => {
     setShowPassword((prev) => !prev);
   };
+
+  const isSubmitting = navigation.state === 'submitting';
 
   return (
     <div className="flex flex-col h-screen items-center">
@@ -67,6 +76,7 @@ export default function LoginPage() {
 
               <button
                 onClick={togglePassword}
+                type="button"
                 className="rounded-md bg-accentColorForeground px-4 py-2 text-sm font-medium text-secondaryColor hover:bg-accentColorForeground focus:outline-none focus:ring-2 focus:ring-accbg-accentColorForeground focus:ring-offset-2"
               >
                 {showPassword ? <IoMdEyeOff /> : <IoMdEye />}
@@ -81,9 +91,12 @@ export default function LoginPage() {
 
           <button
             type="submit"
-            className="w-full rounded-md bg-secondaryColor px-4 py-2 text-sm font-medium text-white hover:bg-secondaryColor focus:outline-none focus:ring-2 focus:ring-seconDabg-secondaryColor focus:ring-offset-2"
+            disabled={isSubmitting}
+            className={`w-full rounded-md bg-secondaryColor px-4 py-2 text-sm font-medium text-white hover:bg-secondaryColor focus:outline-none focus:ring-2 focus:ring-seconDabg-secondaryColor focus:ring-offset-2 ${
+              isSubmitting ? 'cursor-not-allowed' : ''
+            }`}
           >
-            Login
+            {isSubmitting ? 'Logging in...' : 'Login'}
           </button>
           <p>
             Doesn&apos;t have an account?{' '}
@@ -127,13 +140,46 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 
   try {
-    return await authenticator.authenticate('user-pass', request, {
-      successRedirect: '/app',
-      failureRedirect: '/auth',
+    const user = await authenticator.authenticate('user-pass', request);
+
+    const session = await getSession(request.headers.get('Cookie'));
+    session.set('user', user);
+
+    return redirect(ROUTES.HOME, {
+      headers: {
+        'Set-Cookie': await commitSession(session),
+      },
     });
   } catch (error) {
-    const e = error as Error;
-    console.error(e);
-    return json({ errors: { ...errors, control: e.message } }, { status: 401 });
+    console.error(error);
+    if (error instanceof Response) {
+      if (error.status === 302) {
+        return json(
+          {
+            errors: {
+              ...errors,
+              control:
+                error instanceof Error
+                  ? error.message
+                  : 'Invalid password or email',
+            },
+          },
+          { status: 401 },
+        );
+      }
+    }
+
+    return json(
+      {
+        errors: {
+          ...errors,
+          control:
+            error instanceof Error
+              ? error.message
+              : 'Invalid password or email',
+        },
+      },
+      { status: 401 },
+    );
   }
 }

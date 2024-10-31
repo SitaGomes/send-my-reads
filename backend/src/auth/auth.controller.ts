@@ -1,4 +1,10 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpException,
+  HttpStatus,
+  Post,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dtos/request/loginDto';
 import { RegisterDto } from './dtos/request/registerDto';
@@ -9,7 +15,16 @@ export class AuthController {
 
   @Post('login')
   async login(@Body() data: LoginDto) {
-    return this.authService.login(data);
+    // return this.authService.login(data);
+    try {
+      const result = await this.authService.login(data);
+      return result;
+    } catch (error) {
+      throw new HttpException(
+        error.message || 'Authentication failed',
+        error.status || HttpStatus.UNAUTHORIZED,
+      );
+    }
   }
 
   @Post('register')

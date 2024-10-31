@@ -5,9 +5,9 @@ import { LoginDto } from './dtos/request/loginDto';
 import { DatabaseService } from '../lib/database/database.service';
 import { RegisterDto } from './dtos/request/registerDto';
 import { LoginResDto } from './dtos/response/loginResDto';
-import { AuthUser } from 'src/lib/models';
 import { throwErrorFactory } from 'src/lib/error/errorFactory';
 import { ERROR_STATUS } from 'src/lib/constants/STATUS';
+import { AuthUser } from 'src/data/models';
 
 @Injectable()
 export class AuthService {

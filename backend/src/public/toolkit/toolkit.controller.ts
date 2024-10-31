@@ -13,11 +13,11 @@ import { throwErrorFactory } from 'src/lib/error/errorFactory';
 import { ERROR_STATUS } from 'src/lib/constants/STATUS';
 import { StorageService } from 'src/lib/storage/storage.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
-import { AuthUser } from 'src/lib/models';
 import { BookService } from '../book/book.service';
 import EmailService from '../email/email.service';
 import axios from 'axios';
 import { SendBookDTO } from './dtos/send-epub.dto';
+import { AuthUser } from 'src/data/models';
 
 @UseGuards(JwtAuthGuard)
 @Controller('toolkit')

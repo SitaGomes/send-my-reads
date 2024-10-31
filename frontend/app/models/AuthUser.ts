@@ -5,4 +5,10 @@ export type AuthUser = {
   createdAt: Date;
   updatedAt: Date;
 };
+
+export type AuthenticatorAuthUser = {
+  user: AuthUser;
+  token: string;
+};
+
 // Compare this snippet from frontend/app/models/index.ts:

@@ -1,8 +1,13 @@
 import { ActionFunctionArgs, json, MetaFunction } from '@remix-run/node';
-import { Form, Link, useActionData } from '@remix-run/react';
+import {
+  Form,
+  Link,
+  redirect,
+  useActionData,
+  useNavigation,
+} from '@remix-run/react';
 import { AuthApi } from '../.server/endpoints';
 import { ROUTES } from '../constants';
-import { authenticator } from '../.server';
 import { IoMdEye, IoMdEyeOff } from 'react-icons/io';
 import { useState } from 'react';
 
@@ -19,12 +24,15 @@ export const meta: MetaFunction = () => {
 
 export default function RegisterPage() {
   const actionData = useActionData<typeof action>();
+  const navigate = useNavigation();
 
   const [showPassword, setShowPassword] = useState(false);
 
   const togglePassword = () => {
     setShowPassword((prev) => !prev);
   };
+
+  const isSubmitting = navigate.state === 'submitting';
 
   return (
     <div className="flex flex-col h-screen items-center">
@@ -37,6 +45,23 @@ export default function RegisterPage() {
         <h1 className="font-bold text-xl lg:text-2xl">Create an account</h1>
 
         <Form method="post" className="space-y-6">
+          <div className="flex flex-col items-start w-full">
+            <label htmlFor="email" className="text-secondaryColor">
+              Username
+            </label>
+            <input
+              type="name"
+              id="name"
+              name="name"
+              className="p-2 bg-transparent border-2 border-gray-300 rounded-md w-full"
+            />
+            {actionData?.errors.name && (
+              <p className="mt-2 text-sm text-red-600">
+                {actionData.errors.name}
+              </p>
+            )}
+          </div>
+
           <div className="flex flex-col items-start w-full">
             <label htmlFor="email" className="text-secondaryColor">
               Email
@@ -67,6 +92,7 @@ export default function RegisterPage() {
               />
 
               <button
+                type="button"
                 onClick={togglePassword}
                 className="rounded-md bg-accentColorForeground px-4 py-2 text-sm font-medium text-secondaryColor hover:bg-accentColorForeground focus:outline-none focus:ring-2 focus:ring-accbg-accentColorForeground focus:ring-offset-2"
               >
@@ -94,6 +120,7 @@ export default function RegisterPage() {
 
               <button
                 onClick={togglePassword}
+                type="button"
                 className="rounded-md bg-accentColorForeground px-4 py-2 text-sm font-medium text-secondaryColor hover:bg-accentColorForeground focus:outline-none focus:ring-2 focus:ring-accbg-accentColorForeground focus:ring-offset-2"
               >
                 {showPassword ? <IoMdEyeOff /> : <IoMdEye />}
@@ -107,10 +134,13 @@ export default function RegisterPage() {
           </div>
 
           <button
+            disabled={isSubmitting}
             type="submit"
-            className="w-full rounded-md bg-secondaryColor px-4 py-2 text-sm font-medium text-white hover:bg-secondaryColor focus:outline-none focus:ring-2 focus:ring-seconDabg-secondaryColor focus:ring-offset-2"
+            className={`w-full rounded-md bg-secondaryColor px-4 py-2 text-sm font-medium text-white hover:bg-secondaryColor focus:outline-none focus:ring-2 focus:ring-seconDabg-secondaryColor focus:ring-offset-2 ${
+              isSubmitting ? 'cursor-not-allowed' : ''
+            }`}
           >
-            Create account
+            {isSubmitting ? 'Creating...' : 'Create account'}
           </button>
           <p>
             Do you have an account?{' '}
@@ -175,12 +205,18 @@ export async function action({ request }: ActionFunctionArgs) {
   try {
     await AuthApi.register(name, email, password);
 
-    return await authenticator.authenticate('user-pass', request, {
-      successRedirect: ROUTES.HOME,
-      failureRedirect: ROUTES.REGISTER,
-    });
+    return redirect(ROUTES.LOGIN);
   } catch (error) {
-    const e = error as Error;
-    return json({ errors: { ...errors, control: e.message } }, { status: 400 });
+    console.log(error);
+
+    return json(
+      {
+        errors: {
+          ...errors,
+          control: 'Invalid email',
+        },
+      },
+      { status: 401 },
+    );
   }
 }

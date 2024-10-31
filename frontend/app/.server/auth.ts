@@ -1,11 +1,6 @@
 import { Authenticator } from 'remix-auth';
 import { sessionStorage } from './session';
-import { AuthUser } from '~/models';
-
-type AuthenticatorAuthUser = {
-  user: AuthUser;
-  token: string;
-};
+import { AuthenticatorAuthUser } from '~/models';
 
 export const authenticator = new Authenticator<AuthenticatorAuthUser>(
   sessionStorage,

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import { AuthUser, Book } from 'src/data/models';
 import { DatabaseService } from 'src/lib/database/database.service';
-import { AuthUser, Book } from 'src/lib/models';
 
 @Injectable()
 export class BookService {
