@@ -1,5 +1,5 @@
 import type { MetaFunction } from '@remix-run/node';
-import { Link } from '@remix-run/react';
+import { Link } from '~/components/basic/Link';
 import { Container } from '~/components/landing/container';
 import { ROUTES } from '~/constants';
 
@@ -24,25 +24,13 @@ export default function Index() {
             <h1 className="font-bold">Send My Reads</h1>
           </section>
           <nav className="flex items-center gap-4">
-            <Link className="hover:underline hover:text-accentColor" to={''}>
-              Features
-            </Link>
-            <Link className="hover:underline hover:text-accentColor" to={''}>
-              How it works
-            </Link>
+            <Link to={''}>Features</Link>
+            <Link to={''}>How it works</Link>
           </nav>
 
           <nav className="flex items-center gap-4">
-            <Link
-              className="hover:underline hover:text-accentColor"
-              to={ROUTES.LOGIN}
-            >
-              Login
-            </Link>
-            <Link
-              className="hover:underline text-secondaryColor bg-slate-100 hover: rounded-md p-2"
-              to={ROUTES.REGISTER}
-            >
+            <Link to={ROUTES.LOGIN}>Login</Link>
+            <Link special to={ROUTES.REGISTER}>
               Get Started
             </Link>
           </nav>
