@@ -16,6 +16,7 @@ import { useState } from 'react';
 import { useDehydratedState } from 'use-dehydrated-state';
 
 import './tailwind.css';
+import './output.css';
 
 export const links: LinksFunction = () => [
   { rel: 'preconnect', href: 'https://fonts.googleapis.com' },

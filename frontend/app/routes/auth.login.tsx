@@ -6,25 +6,25 @@ import {
   useActionData,
   useNavigation,
 } from '@remix-run/react';
-import { AuthApi } from '../.server/endpoints';
-import { ROUTES } from '../constants';
+import { ROUTES } from '../constants/ROUTES';
+import { authenticator, commitSession, getSession } from '../.server';
 import { IoMdEye, IoMdEyeOff } from 'react-icons/io';
 import { useState } from 'react';
 
 export const meta: MetaFunction = () => {
   return [
-    { title: 'Create account | Send My Reads' },
+    { title: 'Login | Send My Reads' },
     {
       name: 'description',
       content:
-        'Create an account on Send My Reads to organize your books, send them to Kindle, and read anywhere.',
+        'Login to your Send My Reads account to organize your books, send them to Kindle, and read anywhere.',
     },
   ];
 };
 
-export default function RegisterPage() {
+export default function LoginPage() {
   const actionData = useActionData<typeof action>();
-  const navigate = useNavigation();
+  const navigation = useNavigation();
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -32,30 +32,13 @@ export default function RegisterPage() {
     setShowPassword((prev) => !prev);
   };
 
-  const isSubmitting = navigate.state === 'submitting';
+  const isSubmitting = navigation.state === 'submitting';
 
   return (
     <>
-      <h1 className="font-bold text-xl lg:text-2xl">Create an account</h1>
+      <h1 className="font-bold text-xl lg:text-2xl">Login</h1>
 
       <Form method="post" className="space-y-6">
-        <div className="flex flex-col items-start w-full">
-          <label htmlFor="email" className="text-secondaryColor">
-            Username
-          </label>
-          <input
-            type="name"
-            id="name"
-            name="name"
-            className="p-2 bg-transparent border-2 border-gray-300 rounded-md w-full"
-          />
-          {actionData?.errors.name && (
-            <p className="mt-2 text-sm text-red-600">
-              {actionData.errors.name}
-            </p>
-          )}
-        </div>
-
         <div className="flex flex-col items-start w-full">
           <label htmlFor="email" className="text-secondaryColor">
             Email
@@ -86,8 +69,8 @@ export default function RegisterPage() {
             />
 
             <button
-              type="button"
               onClick={togglePassword}
+              type="button"
               className="rounded-md bg-accentColorForeground px-4 py-2 text-sm font-medium text-secondaryColor hover:bg-accentColorForeground focus:outline-none focus:ring-2 focus:ring-accbg-accentColorForeground focus:ring-offset-2"
             >
               {showPassword ? <IoMdEyeOff /> : <IoMdEye />}
@@ -100,55 +83,26 @@ export default function RegisterPage() {
           )}
         </div>
 
-        <div className="flex flex-col items-start w-full">
-          <label htmlFor="confirmPassword" className="text-secondaryColor">
-            Confirm password
-          </label>
-          <div className="flex gap-4 w-full">
-            <input
-              type={showPassword ? 'text' : 'password'}
-              id="confirmPassword"
-              name="confirmPassword"
-              className="p-2 bg-transparent border-2 border-gray-300 rounded-md w-full"
-            />
-
-            <button
-              onClick={togglePassword}
-              type="button"
-              className="rounded-md bg-accentColorForeground px-4 py-2 text-sm font-medium text-secondaryColor hover:bg-accentColorForeground focus:outline-none focus:ring-2 focus:ring-accbg-accentColorForeground focus:ring-offset-2"
-            >
-              {showPassword ? <IoMdEyeOff /> : <IoMdEye />}
-            </button>
-          </div>
-          {actionData?.errors.confirmPassword && (
-            <p className="mt-2 text-sm text-red-600">
-              {actionData.errors.confirmPassword}
-            </p>
-          )}
-        </div>
-
         <button
-          disabled={isSubmitting}
           type="submit"
+          disabled={isSubmitting}
           className={`w-full rounded-md bg-secondaryColor px-4 py-2 text-sm font-medium text-white hover:bg-secondaryColor focus:outline-none focus:ring-2 focus:ring-seconDabg-secondaryColor focus:ring-offset-2 ${
             isSubmitting ? 'cursor-not-allowed' : ''
           }`}
         >
-          {isSubmitting ? 'Creating...' : 'Create account'}
+          {isSubmitting ? 'Logging in...' : 'Login'}
         </button>
         <p>
-          Do you have an account?{' '}
+          Doesn&apos;t have an account?{' '}
           <Link
             className="hover:underline text-secondaryColor"
-            to={ROUTES.LOGIN}
+            to={ROUTES.REGISTER}
           >
-            Login here
+            Get Started today
           </Link>
         </p>
         {actionData?.errors.control && (
-          <p className="mt-2 text-sm text-red-600">
-            {actionData.errors.control}
-          </p>
+          <p className="text-red-600 min-w-7">{actionData.errors.control}</p>
         )}
       </Form>
     </>
@@ -157,16 +111,12 @@ export default function RegisterPage() {
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.clone().formData();
-  const name = String(formData.get('name'));
   const email = String(formData.get('email'));
   const password = String(formData.get('password'));
-  const confirmPassword = String(formData.get('confirmPassword'));
 
   const errors = {
-    name: '',
     email: '',
     password: '',
-    confirmPassword: '',
     control: '',
   };
 
@@ -175,38 +125,51 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 
   if (password.length < 6) {
-    errors.password = 'Password should be at least 12 characters';
+    errors.password = 'Password should be at least 6 characters';
   }
 
-  if (name.length < 3) {
-    errors.name = 'Name should be at least 3 characters';
-  }
-
-  if (password !== confirmPassword) {
-    errors.confirmPassword = 'Passwords do not match';
-  }
-
-  if (
-    errors.email ||
-    errors.password ||
-    errors.confirmPassword ||
-    errors.name
-  ) {
+  if (errors.email || errors.password) {
     return json({ errors });
   }
 
   try {
-    await AuthApi.register(name, email, password);
+    const user = await authenticator.authenticate('user-pass', request);
 
-    return redirect(ROUTES.LOGIN);
+    const session = await getSession(request.headers.get('Cookie'));
+    session.set('user', user);
+
+    return redirect(ROUTES.HOME, {
+      headers: {
+        'Set-Cookie': await commitSession(session),
+      },
+    });
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    if (error instanceof Response) {
+      if (error.status === 302) {
+        return json(
+          {
+            errors: {
+              ...errors,
+              control:
+                error instanceof Error
+                  ? error.message
+                  : 'Invalid password or email',
+            },
+          },
+          { status: 401 },
+        );
+      }
+    }
 
     return json(
       {
         errors: {
           ...errors,
-          control: 'Invalid email',
+          control:
+            error instanceof Error
+              ? error.message
+              : 'Invalid password or email',
         },
       },
       { status: 401 },
