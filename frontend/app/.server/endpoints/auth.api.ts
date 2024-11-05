@@ -36,7 +36,7 @@ class AuthApi extends BaseApi {
 
   static async getUser() {
     try {
-      return await this.get<AuthUser>(ENDPOINTS.GET_USERS);
+      return await this.get<AuthUser>(ENDPOINTS.GET_USER);
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(`Failed to get user: ${error.message}`);

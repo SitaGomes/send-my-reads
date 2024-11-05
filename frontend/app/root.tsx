@@ -7,15 +7,6 @@ import {
 } from '@remix-run/react';
 import { LinksFunction } from '@remix-run/node';
 
-import {
-  HydrationBoundary,
-  QueryClient,
-  QueryClientProvider,
-} from '@tanstack/react-query';
-import { useState } from 'react';
-import { useDehydratedState } from 'use-dehydrated-state';
-
-import './tailwind.css';
 import './output.css';
 
 export const links: LinksFunction = () => [
@@ -57,27 +48,10 @@ function Layout({
 }
 
 export default function App() {
-  const [queryClient] = useState(
-    () =>
-      new QueryClient({
-        defaultOptions: {
-          queries: {
-            staleTime: 60 * 1000,
-          },
-        },
-      }),
-  );
-
-  const dehydratedState = useDehydratedState();
-
   return (
-    <QueryClientProvider client={queryClient}>
-      <HydrationBoundary state={dehydratedState}>
-        <Layout title="Send My Reads">
-          <Outlet />
-        </Layout>
-      </HydrationBoundary>
-    </QueryClientProvider>
+    <Layout title="Send My Reads">
+      <Outlet />
+    </Layout>
   );
 }
 

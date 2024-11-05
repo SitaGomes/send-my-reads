@@ -1,5 +1,6 @@
 export const ENDPOINTS = {
-  GET_USERS: '/user/profile',
   LOGIN: '/auth/login',
   REGISTER: '/auth/register',
+  GET_BOOKS: '/user/books',
+  GET_USER: '/user/profile',
 } as const;

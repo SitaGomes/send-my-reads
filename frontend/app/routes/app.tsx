@@ -1,30 +1,45 @@
-import { Form, json, Outlet, redirect } from '@remix-run/react';
+import { Form, json, Outlet, redirect, useLoaderData } from '@remix-run/react';
 import { ROUTES } from '~/constants';
 import {
   ActionFunctionArgs,
   LoaderFunction,
   MetaFunction,
 } from '@remix-run/node';
-import { authenticator, getSession } from '~/.server';
-import { AuthUser } from '~/models';
+import { authenticator, getSessionData } from '~/.server';
 import { Link } from '~/components/basic/Link';
+import { AuthUser } from '~/models';
 
 export const meta: MetaFunction = () => {
   return [{ title: 'Send My Reads' }];
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const session = await getSession(request.headers.get('Cookie'));
-  const user = session.get('user') as AuthUser | null;
+  const { user } = await getSessionData(request);
 
   if (!user) {
     throw redirect(ROUTES.LANDING_PAGE);
   }
 
-  return json({ user });
+  return json(
+    { user },
+    {
+      headers: {
+        'Cache-Control': 'private, max-age=3600', // 1 hour
+      },
+    },
+  );
 };
 
 export default function AppLayout() {
+  const response = useLoaderData<typeof loader>();
+  const user: AuthUser | null = response?.user
+    ? {
+        ...response.user,
+        updatedAt: new Date(response.user.updatedAt),
+        createdAt: new Date(response.user.createdAt),
+      }
+    : null;
+
   return (
     <div className="flex min-h-screen">
       <header className="bg-accentColorForeground p-4 flex flex-col gap-4 justify-start">
@@ -35,7 +50,7 @@ export default function AppLayout() {
         </Form>
       </header>
       <main className="flex-1 overflow-y-auto p-4">
-        <Outlet context={{ test: 'test' }} />
+        <Outlet context={{ user }} />
       </main>
     </div>
   );
