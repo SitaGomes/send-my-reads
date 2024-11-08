@@ -1,6 +1,7 @@
 import { json, LoaderFunction, MetaFunction } from '@remix-run/node';
 import { getSessionData } from '~/.server';
 import { UserApi } from '~/.server/endpoints';
+import SubmitFile from '~/components/SubmitFile/SubmitFile';
 import { useUser, useBooks } from '~/hooks';
 
 export const meta: MetaFunction = () => {
@@ -29,7 +30,10 @@ export default function BookshelfPage() {
 
   return (
     <div>
-      <h1>{user.username}&apos;s Bookshelf</h1>
+      <div className="flex justify-between">
+        <h1 className="text-2xl font-bold">Bookshelf</h1>
+        <SubmitFile />
+      </div>
       {books?.map((book) => (
         <div key={book.id}>{book.title}</div>
       ))}

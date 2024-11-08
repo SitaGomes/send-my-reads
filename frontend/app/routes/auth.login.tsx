@@ -1,4 +1,9 @@
-import { ActionFunctionArgs, json, MetaFunction } from '@remix-run/node';
+import {
+  type ActionFunctionArgs,
+  json,
+  type LoaderFunction,
+  type MetaFunction,
+} from '@remix-run/node';
 import {
   Form,
   Link,
@@ -7,7 +12,12 @@ import {
   useNavigation,
 } from '@remix-run/react';
 import { ROUTES } from '../constants/ROUTES';
-import { authenticator, commitSession, getSession } from '../.server';
+import {
+  authenticator,
+  commitSession,
+  getSession,
+  getSessionData,
+} from '../.server';
 import { IoMdEye, IoMdEyeOff } from 'react-icons/io';
 import { useState } from 'react';
 
@@ -21,6 +31,84 @@ export const meta: MetaFunction = () => {
     },
   ];
 };
+
+export const loader: LoaderFunction = async ({ request }) => {
+  const { user } = await getSessionData(request);
+
+  if (user) {
+    throw redirect(ROUTES.HOME);
+  }
+
+  return null;
+};
+
+export async function action({ request }: ActionFunctionArgs) {
+  const formData = await request.clone().formData();
+  const email = String(formData.get('email'));
+  const password = String(formData.get('password'));
+
+  const errors = {
+    email: '',
+    password: '',
+    control: '',
+  };
+
+  if (!email.includes('@')) {
+    errors.email = 'Invalid email address';
+  }
+
+  if (password.length < 6) {
+    errors.password = 'Password should be at least 6 characters';
+  }
+
+  if (errors.email || errors.password) {
+    return json({ errors });
+  }
+
+  try {
+    const user = await authenticator.authenticate('user-pass', request);
+
+    const session = await getSession(request.headers.get('Cookie'));
+    session.set('user', user);
+
+    return redirect(ROUTES.HOME, {
+      headers: {
+        'Set-Cookie': await commitSession(session),
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    if (error instanceof Response) {
+      if (error.status === 302) {
+        return json(
+          {
+            errors: {
+              ...errors,
+              control:
+                error instanceof Error
+                  ? error.message
+                  : 'Invalid password or email',
+            },
+          },
+          { status: 401 },
+        );
+      }
+    }
+
+    return json(
+      {
+        errors: {
+          ...errors,
+          control:
+            error instanceof Error
+              ? error.message
+              : 'Invalid password or email',
+        },
+      },
+      { status: 401 },
+    );
+  }
+}
 
 export default function LoginPage() {
   const actionData = useActionData<typeof action>();
@@ -107,72 +195,4 @@ export default function LoginPage() {
       </Form>
     </>
   );
-}
-
-export async function action({ request }: ActionFunctionArgs) {
-  const formData = await request.clone().formData();
-  const email = String(formData.get('email'));
-  const password = String(formData.get('password'));
-
-  const errors = {
-    email: '',
-    password: '',
-    control: '',
-  };
-
-  if (!email.includes('@') || email.includes('@yupmail')) {
-    errors.email = 'Invalid email address';
-  }
-
-  if (password.length < 6) {
-    errors.password = 'Password should be at least 6 characters';
-  }
-
-  if (errors.email || errors.password) {
-    return json({ errors });
-  }
-
-  try {
-    const user = await authenticator.authenticate('user-pass', request);
-
-    const session = await getSession(request.headers.get('Cookie'));
-    session.set('user', user);
-
-    return redirect(ROUTES.HOME, {
-      headers: {
-        'Set-Cookie': await commitSession(session),
-      },
-    });
-  } catch (error) {
-    console.error(error);
-    if (error instanceof Response) {
-      if (error.status === 302) {
-        return json(
-          {
-            errors: {
-              ...errors,
-              control:
-                error instanceof Error
-                  ? error.message
-                  : 'Invalid password or email',
-            },
-          },
-          { status: 401 },
-        );
-      }
-    }
-
-    return json(
-      {
-        errors: {
-          ...errors,
-          control:
-            error instanceof Error
-              ? error.message
-              : 'Invalid password or email',
-        },
-      },
-      { status: 401 },
-    );
-  }
 }

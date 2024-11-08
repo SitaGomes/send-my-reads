@@ -6,6 +6,7 @@ import {
   ScrollRestoration,
 } from '@remix-run/react';
 import { LinksFunction } from '@remix-run/node';
+import { Toaster } from 'react-hot-toast';
 
 import './output.css';
 
@@ -51,6 +52,7 @@ export default function App() {
   return (
     <Layout title="Send My Reads">
       <Outlet />
+      <Toaster />
     </Layout>
   );
 }

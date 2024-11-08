@@ -1,4 +1,4 @@
-import type { MetaFunction } from '@remix-run/node';
+import { type MetaFunction } from '@remix-run/node';
 import { Link } from '~/components/basic/Link';
 import { Container } from '~/components/landing/container';
 import { ROUTES } from '~/constants';

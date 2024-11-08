@@ -1,9 +1,9 @@
 import { Form, json, Outlet, redirect, useLoaderData } from '@remix-run/react';
 import { ROUTES } from '~/constants';
 import {
-  ActionFunctionArgs,
-  LoaderFunction,
-  MetaFunction,
+  type ActionFunctionArgs,
+  type LoaderFunction,
+  type MetaFunction,
 } from '@remix-run/node';
 import { authenticator, getSessionData } from '~/.server';
 import { Link } from '~/components/basic/Link';
