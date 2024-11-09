@@ -10,6 +10,7 @@ import { AuthApi } from '../.server/endpoints';
 import { ROUTES } from '../constants';
 import { IoMdEye, IoMdEyeOff } from 'react-icons/io';
 import { useState } from 'react';
+import { Button } from '~/components/basic';
 
 export const meta: MetaFunction = () => {
   return [
@@ -55,7 +56,6 @@ export default function RegisterPage() {
             </p>
           )}
         </div>
-
         <div className="flex flex-col items-start w-full">
           <label htmlFor="email" className="text-secondaryColor">
             Email
@@ -72,7 +72,6 @@ export default function RegisterPage() {
             </p>
           )}
         </div>
-
         <div className="flex flex-col items-start w-full">
           <label htmlFor="password" className="text-secondaryColor">
             Password
@@ -85,13 +84,9 @@ export default function RegisterPage() {
               className="p-2 bg-transparent border-2 border-gray-300 rounded-md w-full"
             />
 
-            <button
-              type="button"
-              onClick={togglePassword}
-              className="rounded-md bg-accentColorForeground px-4 py-2 text-sm font-medium text-secondaryColor hover:bg-accentColorForeground focus:outline-none focus:ring-2 focus:ring-accbg-accentColorForeground focus:ring-offset-2"
-            >
+            <Button onClick={togglePassword} type="button" secondary>
               {showPassword ? <IoMdEyeOff /> : <IoMdEye />}
-            </button>
+            </Button>
           </div>
           {actionData?.errors.password && (
             <p className="mt-2 text-sm text-red-600">
@@ -99,7 +94,6 @@ export default function RegisterPage() {
             </p>
           )}
         </div>
-
         <div className="flex flex-col items-start w-full">
           <label htmlFor="confirmPassword" className="text-secondaryColor">
             Confirm password
@@ -112,13 +106,9 @@ export default function RegisterPage() {
               className="p-2 bg-transparent border-2 border-gray-300 rounded-md w-full"
             />
 
-            <button
-              onClick={togglePassword}
-              type="button"
-              className="rounded-md bg-accentColorForeground px-4 py-2 text-sm font-medium text-secondaryColor hover:bg-accentColorForeground focus:outline-none focus:ring-2 focus:ring-accbg-accentColorForeground focus:ring-offset-2"
-            >
+            <Button onClick={togglePassword} type="button" secondary>
               {showPassword ? <IoMdEyeOff /> : <IoMdEye />}
-            </button>
+            </Button>
           </div>
           {actionData?.errors.confirmPassword && (
             <p className="mt-2 text-sm text-red-600">
@@ -126,16 +116,13 @@ export default function RegisterPage() {
             </p>
           )}
         </div>
-
-        <button
-          disabled={isSubmitting}
+        <Button
           type="submit"
-          className={`w-full rounded-md bg-secondaryColor px-4 py-2 text-sm font-medium text-white hover:bg-secondaryColor focus:outline-none focus:ring-2 focus:ring-seconDabg-secondaryColor focus:ring-offset-2 ${
-            isSubmitting ? 'cursor-not-allowed' : ''
-          }`}
+          isLoading={isSubmitting}
+          loadingText="Creating..."
         >
-          {isSubmitting ? 'Creating...' : 'Create account'}
-        </button>
+          Create account
+        </Button>
         <p>
           Do you have an account?{' '}
           <Link

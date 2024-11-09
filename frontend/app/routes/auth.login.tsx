@@ -20,6 +20,7 @@ import {
 } from '../.server';
 import { IoMdEye, IoMdEyeOff } from 'react-icons/io';
 import { useState } from 'react';
+import { Button } from '~/components/basic';
 
 export const meta: MetaFunction = () => {
   return [
@@ -156,13 +157,9 @@ export default function LoginPage() {
               className="p-2 bg-transparent border-2 border-gray-300 rounded-md w-full"
             />
 
-            <button
-              onClick={togglePassword}
-              type="button"
-              className="rounded-md bg-accentColorForeground px-4 py-2 text-sm font-medium text-secondaryColor hover:bg-accentColorForeground focus:outline-none focus:ring-2 focus:ring-accbg-accentColorForeground focus:ring-offset-2"
-            >
+            <Button onClick={togglePassword} type="button" secondary>
               {showPassword ? <IoMdEyeOff /> : <IoMdEye />}
-            </button>
+            </Button>
           </div>
           {actionData?.errors.password && (
             <p className="mt-2 text-sm text-red-600">
@@ -171,15 +168,13 @@ export default function LoginPage() {
           )}
         </div>
 
-        <button
+        <Button
           type="submit"
-          disabled={isSubmitting}
-          className={`w-full rounded-md bg-secondaryColor px-4 py-2 text-sm font-medium text-white hover:bg-secondaryColor focus:outline-none focus:ring-2 focus:ring-seconDabg-secondaryColor focus:ring-offset-2 ${
-            isSubmitting ? 'cursor-not-allowed' : ''
-          }`}
+          isLoading={isSubmitting}
+          loadingText="Logging in..."
         >
-          {isSubmitting ? 'Logging in...' : 'Login'}
-        </button>
+          Login
+        </Button>
         <p>
           Doesn&apos;t have an account?{' '}
           <Link

@@ -1,4 +1,6 @@
 import { type MetaFunction } from '@remix-run/node';
+import { useNavigate } from '@remix-run/react';
+import { Button } from '~/components/basic';
 import { Link } from '~/components/basic/Link';
 import { Container } from '~/components/landing/container';
 import { ROUTES } from '~/constants';
@@ -15,6 +17,10 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Index() {
+  const navigate = useNavigate();
+
+  const handleCreateAccount = () => navigate(ROUTES.REGISTER);
+
   return (
     <div className="min-h-screen flex flex-col w-full">
       <header className="p-5">
@@ -30,9 +36,9 @@ export default function Index() {
 
           <nav className="flex items-center gap-4">
             <Link to={ROUTES.LOGIN}>Login</Link>
-            <Link special to={ROUTES.REGISTER}>
+            <Button secondary onClick={handleCreateAccount}>
               Get Started
-            </Link>
+            </Button>
           </nav>
         </Container>
       </header>

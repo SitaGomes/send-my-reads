@@ -8,6 +8,7 @@ import {
 import { authenticator, getSessionData } from '~/.server';
 import { Link } from '~/components/basic/Link';
 import { AuthUser } from '~/models';
+import { Button } from '~/components/basic';
 
 export const meta: MetaFunction = () => {
   return [{ title: 'Send My Reads' }];
@@ -42,11 +43,13 @@ export default function AppLayout() {
 
   return (
     <div className="flex min-h-screen">
-      <header className="bg-accentColorForeground p-4 flex flex-col gap-4 justify-start">
+      <header className="bg-secondaryColor p-4 flex flex-col gap-4 justify-start">
         <Link to={ROUTES.BOOKS}>Bookshelf</Link>
         <Link to={ROUTES.PROFILE}>Profile</Link>
         <Form method="post">
-          <button>Sair</button>
+          <Button secondary type="submit">
+            Sair
+          </Button>
         </Form>
       </header>
       <main className="flex-1 overflow-y-auto p-4">

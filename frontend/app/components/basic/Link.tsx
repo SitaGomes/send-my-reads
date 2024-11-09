@@ -8,18 +8,23 @@ type LinkProps = {
 
 export const Link = ({
   to,
-  special,
+  special = false,
   children,
 }: PropsWithChildren<LinkProps>) => {
-  return special ? (
+  const baseStyles =
+    'inline-flex items-center transition-all duration-200 ease-in-out';
+
+  const specialStyles =
+    'text-secondaryColor bg-accentColorForeground hover:bg-accentColorForeground/90 px-3 py-1.5 rounded-md shadow-sm';
+
+  const standardStyles =
+    'text-primaryColor hover:underline hover:text-accentColor';
+
+  return (
     <ExternalLink
-      className="hover:underline text-secondaryColor bg-slate-100 hover: rounded-md p-2"
       to={to}
+      className={`${baseStyles} ${special ? specialStyles : standardStyles}`}
     >
-      {children}
-    </ExternalLink>
-  ) : (
-    <ExternalLink to={to} className="hover:underline hover:text-accentColor">
       {children}
     </ExternalLink>
   );
