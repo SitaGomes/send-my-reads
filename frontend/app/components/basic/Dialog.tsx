@@ -11,9 +11,9 @@ type DialogProps = {
   isOpen: boolean;
   onClose: () => void;
   title: string;
-  submitButton: React.ReactNode;
   children: React.ReactNode;
   description?: string;
+  submitButton?: React.ReactNode;
 };
 
 export const Dialog = ({
@@ -32,12 +32,14 @@ export const Dialog = ({
           <DialogTitle className="font-bold">{title}</DialogTitle>
           {description && <Description>{description}</Description>}
           {children}
-          <div className="flex gap-4">
-            <Button secondary onClick={onClose}>
-              Cancel
-            </Button>
-            {submitButton}
-          </div>
+          {submitButton && (
+            <div className="flex gap-4">
+              <Button secondary onClick={onClose}>
+                Cancel
+              </Button>
+              {submitButton}
+            </div>
+          )}
         </DialogPanel>
       </div>
     </HeadlessUiDialog>

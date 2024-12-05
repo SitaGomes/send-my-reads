@@ -1,7 +1,10 @@
+import { cn } from '~/utils/cn';
+
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   isLoading?: boolean;
   loadingText?: string;
   secondary?: boolean;
+  className?: string;
   children: React.ReactNode;
 };
 
@@ -10,6 +13,7 @@ export const Button = ({
   loadingText = 'Loading...',
   isLoading = false,
   secondary = false,
+  className,
   ...rest
 }: ButtonProps) => {
   const baseStyles =
@@ -23,12 +27,16 @@ export const Button = ({
 
   const loadingStyles = isLoading ? 'cursor-not-allowed opacity-70' : '';
 
-  const className = `${baseStyles} ${
+  const basicClassName = `${baseStyles} ${
     secondary ? secondaryStyles : primaryStyles
   } ${loadingStyles}`;
 
   return (
-    <button className={className} disabled={isLoading} {...rest}>
+    <button
+      className={cn(className, basicClassName)}
+      disabled={isLoading}
+      {...rest}
+    >
       {isLoading ? (
         <span className="flex items-center">
           <svg
