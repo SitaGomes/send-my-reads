@@ -23,10 +23,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-dropzone": "^14.3.5",
-    "react-hook-form": "^7.53.2",
     "remix-auth": "^3.7.0",
-    "remix-auth-form": "^1.5.0",
-    "remix-hook-form": "^6.0.0"
+    "remix-auth-form": "^1.5.0"
   },
   "devDependencies": {
     "@headlessui/react": "^2.2.0",

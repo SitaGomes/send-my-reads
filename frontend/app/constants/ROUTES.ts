@@ -5,5 +5,4 @@ export const ROUTES = {
   LANDING_PAGE: '/',
   BOOKS: '/app/books',
   PROFILE: '/app/profile',
-  UPLOAD_BOOK: '/app/upload-book',
 } as const;
